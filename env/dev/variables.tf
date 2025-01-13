@@ -186,10 +186,15 @@ variable "fargate_profile_exec_policy_name" {
 variable "eks_version" {
   description = "EKS master version"
   type = string 
-  default = "1.31.1"
+  default = "1.31"
+}
+
+variable "fargate_profile_name" {
+  description = "Fargate profile name"
+  type        = list(string)
 }
 
 variable "fargate_profile_selector_name" {
   description = "Fargate profile selector name"
-  type        = list(string)
+  type        = string
 }

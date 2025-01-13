@@ -115,6 +115,17 @@ module "eks_addon" {
     ]
 }
 
+module "eks_fargate_pf_kube_system" {
+  source = "../../module/eks_fargate_pf"
+
+  general_config                = var.general_config
+  eks_cluster_name              = module.eks.eks_cluster_name
+  private_subnet_ids            = module.network.private_subnet_ids
+  fargate_profile_exec_role     = module.iam_fargate_profile_exec.iam_role_arn
+  fargate_profile_name = ["kube-system"]
+  fargate_profile_selector_name = "kube-system"
+}
+
 module "eks_fargate_pf_1" {
   source = "../../module/eks_fargate_pf"
 
@@ -122,10 +133,8 @@ module "eks_fargate_pf_1" {
   eks_cluster_name              = module.eks.eks_cluster_name
   private_subnet_ids            = module.network.private_subnet_ids
   fargate_profile_exec_role     = module.iam_fargate_profile_exec.iam_role_arn
-  fargate_profile_selector_name = concat(
-    ["kube-system"],
-    var.fargate_profile_selector_name
-  )
+  fargate_profile_name = var.fargate_profile_name
+  fargate_profile_selector_name = var.fargate_profile_selector_name
 }
 
 ##IAM
