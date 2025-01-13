@@ -1,6 +1,6 @@
 ##Provider for ap-northeast-1
 provider "aws" {
-  #profile    = "terraform-user"
+  profile    = "terraform-user"
   access_key = var.access_key
   secret_key = var.secret_key
   region     = "ap-northeast-1"
@@ -97,31 +97,22 @@ module "eks" {
 
   general_config     = var.general_config
   eks_cluster_role   = module.iam_eks_cluster.iam_role_arn
+  eks_version = var.eks_version
   private_subnet_ids = module.network.private_subnet_ids
   internal_sg_id     = module.internal_sg.security_group_id
   eks_cluster_policy = module.iam_eks_cluster.iam_policy_attachment_name
   eks_service_policy = module.iam_eks_service.iam_policy_attachment_name
 }
 
-module "eks_addon_1" {
+module "eks_addon" {
   source = "../../module/eks_addon"
 
   eks_cluster_name = module.eks.eks_cluster_name
-  eks_addon_name   = "coredns"
-}
-
-module "eks_addon_2" {
-  source = "../../module/eks_addon"
-
-  eks_cluster_name = module.eks.eks_cluster_name
-  eks_addon_name   = "kube-proxy"
-}
-
-module "eks_addon_3" {
-  source = "../../module/eks_addon"
-
-  eks_cluster_name = module.eks.eks_cluster_name
-  eks_addon_name   = "vpc-cni"
+  eks_addon_name   = [
+    "coredns", 
+    "kube-proxy", 
+    "vpc-cni"
+    ]
 }
 
 module "eks_fargate_pf_1" {
@@ -131,17 +122,10 @@ module "eks_fargate_pf_1" {
   eks_cluster_name              = module.eks.eks_cluster_name
   private_subnet_ids            = module.network.private_subnet_ids
   fargate_profile_exec_role     = module.iam_fargate_profile_exec.iam_role_arn
-  fargate_profile_selector_name = "kube-system"
-}
-
-module "eks_fargate_pf_2" {
-  source = "../../module/eks_fargate_pf"
-
-  general_config                = var.general_config
-  eks_cluster_name              = module.eks.eks_cluster_name
-  private_subnet_ids            = module.network.private_subnet_ids
-  fargate_profile_exec_role     = module.iam_fargate_profile_exec.iam_role_arn
-  fargate_profile_selector_name = var.fargate_profile_selector_name
+  fargate_profile_selector_name = concat(
+    ["kube-system"],
+    var.fargate_profile_selector_name
+  )
 }
 
 ##IAM

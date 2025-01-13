@@ -23,7 +23,6 @@ variable "general_config" {
 variable "regions" {
   default = {
     tokyo    = "ap-northeast-1"
-    virginia = "us-east-1"
   }
 }
 
@@ -184,8 +183,13 @@ variable "fargate_profile_exec_policy_name" {
 }
 
 ##EKS
+variable "eks_version" {
+  description = "EKS master version"
+  type = string 
+  default = "1.31.1"
+}
+
 variable "fargate_profile_selector_name" {
   description = "Fargate profile selector name"
-  type        = string
-  default     = ""
+  type        = list(string)
 }
